@@ -4,6 +4,11 @@
 <head>
     <title>Custom Vision Prediction API</title>
     <meta charset="UTF-8" />
+    <style>
+        video {
+            display: block;
+        }
+    </style>
 </head>
 
 <body>
@@ -30,36 +35,37 @@
                 });
         }
 
-
-        setInterval(() => {
-            context.drawImage(video, 0, 0, 640, 480);
-            canvas.toBlob(blob => {
-                fetch(predictionURL, {
-                    method: 'POST',
-                    headers: {
-                        'Prediction-Key': predictionKey,
-                        'Content-Type': 'application/octet-stream',
-                    },
-                    body: blob,
-                })
-                    .then((response) => response.json())
-                    .then((data) => {
-                        console.log(data);
-                        if (data.predictions && data.predictions.length > 50) {
-                            let highestPrediction = data.predictions.reduce((max, p) => max.probability > p.probability ? max : p);
-                            if (highestPrediction.probability > detectionThreshold) {
-                                console.log(highestPrediction.tagName)
-                                // alert('Detected: ' + highestPrediction.tagName);
-                            }
-                            if (highestPrediction.tagName === 'recycled') {
-                                alert('bottle is recycled')
-                            }
-
-                        }
+        video.addEventListener('play', () => {
+            setInterval(() => {
+                context.drawImage(video, 0, 0, 640, 480);
+                canvas.toBlob(blob => {
+                    fetch(predictionURL, {
+                        method: 'POST',
+                        headers: {
+                            'Prediction-Key': predictionKey,
+                            'Content-Type': 'application/octet-stream',
+                        },
+                        body: blob,
                     })
-                    .catch((error) => console.error(error));
-            }, 'image/jpeg', 0.8);
-        }, 100);
+                        .then((response) => response.json())
+                        .then((data) => {
+                            console.log(data);
+                            if (data.predictions && data.predictions.length > 50) {
+                                let highestPrediction = data.predictions.reduce((max, p) => max.probability > p.probability ? max : p);
+                                if (highestPrediction.probability > detectionThreshold) {
+                                    console.log(highestPrediction.tagName)
+                                    // alert('Detected: ' + highestPrediction.tagName);
+                                }
+                                if (highestPrediction.tagName === 'recycled') {
+                                    alert('bottle is recycled')
+                                }
+
+                            }
+                        })
+                        .catch((error) => console.error(error));
+                }, 'image/jpeg', 0.8);
+            }, 150);
+        });
     </script>
 </body>
 
