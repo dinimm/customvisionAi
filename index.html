@@ -24,20 +24,23 @@
         const detectionThreshold = 0.6; // Adjust this value according to your needs
 
         if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-            navigator.mediaDevices.getUserMedia({ video: true })
-                .then((stream) => {
-                    video.srcObject = stream;
-                    video.play();
-                })
-                .catch((error) => {
-                    console.error('Error accessing camera:', error);
-                    if (error.name === 'NotAllowedError') {
-                        alert('Please grant camera access to use this feature. You may need to reload the page after granting permission.');
-                    } else {
-                        alert('An error occurred while accessing the camera.');
-                    }
-                });
-        }
+    navigator.mediaDevices.getUserMedia({ video: true })
+        .then((stream) => {
+            video.srcObject = stream;
+            video.play();
+        })
+        .catch((error) => {
+            console.error('Error accessing camera:', error);
+            if (error.name === 'NotAllowedError') {
+                alert('Please grant camera access to use this feature. You may need to reload the page after granting permission.');
+            } else if (error.name === 'NotReadableError' || error.name === 'TrackStartError') {
+                alert('The camera is already in use by another application. Please close other applications that might be using the camera and try again.');
+            } else {
+                alert('An error occurred while accessing the camera: ' + error.message);
+            }
+        });
+}
+
 
         video.addEventListener('play', () => {
             setInterval(() => {
