@@ -19,11 +19,17 @@
         const detectionThreshold = 0.6; // Adjust this value according to your needs
 
         if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-            navigator.mediaDevices.getUserMedia({ video: true }).then((stream) => {
-                video.srcObject = stream;
-                video.play();
-            });
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then((stream) => {
+                    video.srcObject = stream;
+                    video.play();
+                })
+                .catch((error) => {
+                    console.error('Error accessing camera:', error);
+                    alert('Please grant camera access to use this feature.');
+                });
         }
+
 
         setInterval(() => {
             context.drawImage(video, 0, 0, 640, 480);
@@ -53,7 +59,7 @@
                     })
                     .catch((error) => console.error(error));
             }, 'image/jpeg', 0.8);
-        }, 500);
+        }, 100);
     </script>
 </body>
 
