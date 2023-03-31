@@ -13,7 +13,7 @@
 
 <body>
     <h1>Custom Vision Prediction API</h1>
-    <video id="video" width="640" height="480" autoplay></video>
+    <video autoplay loop muted playsinline id="video" width="640" height="480" autoplay muted></video>
     <canvas id="canvas" width="640" height="480"></canvas>
     <script>
         const predictionKey = '75deb4a7d3c64b8e9f9cb69984efbc6f';
@@ -24,23 +24,21 @@
         const detectionThreshold = 0.6; // Adjust this value according to your needs
 
         if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-    navigator.mediaDevices.getUserMedia({ video: true })
-        .then((stream) => {
-            video.srcObject = stream;
-            video.play();
-        })
-        .catch((error) => {
-            console.error('Error accessing camera:', error);
-            if (error.name === 'NotAllowedError') {
-                alert('Please grant camera access to use this feature. You may need to reload the page after granting permission.');
-            } else if (error.name === 'NotReadableError' || error.name === 'TrackStartError') {
-                alert('The camera is already in use by another application. Please close other applications that might be using the camera and try again.');
-            } else {
-                alert('An error occurred while accessing the camera: ' + error.message);
-            }
-        });
-}
-
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then((stream) => {
+                    video.srcObject = stream;
+                })
+                .catch((error) => {
+                    console.error('Error accessing camera:', error);
+                    if (error.name === 'NotAllowedError') {
+                        alert('Please grant camera access to use this feature. You may need to reload the page after granting permission.');
+                    } else if (error.name === 'NotReadableError' || error.name === 'TrackStartError') {
+                        alert('The camera is already in use by another application. Please close other applications that might be using the camera and try again.');
+                    } else {
+                        alert('An error occurred while accessing the camera: ' + error.message);
+                    }
+                });
+        }
 
         video.addEventListener('play', () => {
             setInterval(() => {
@@ -66,7 +64,6 @@
                                 if (highestPrediction.tagName === 'recycled') {
                                     alert('bottle is recycled')
                                 }
-
                             }
                         })
                         .catch((error) => console.error(error));
@@ -77,4 +74,3 @@
 </body>
 
 </html>
-
