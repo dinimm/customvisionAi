@@ -24,7 +24,11 @@
         const detectionThreshold = 0.6; // Adjust this value according to your needs
 
         if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-            navigator.mediaDevices.getUserMedia({ video: true })
+            navigator.mediaDevices.getUserMedia({
+                video: {
+                    facingMode: 'environment'
+                }
+            })
                 .then((stream) => {
                     video.srcObject = stream;
                 })
@@ -68,7 +72,7 @@
                         })
                         .catch((error) => console.error(error));
                 }, 'image/jpeg', 0.8);
-            }, 100);
+            }, 125);
         });
     </script>
 </body>
