@@ -31,7 +31,11 @@
                 })
                 .catch((error) => {
                     console.error('Error accessing camera:', error);
-                    alert('Please grant camera access to use this feature.');
+                    if (error.name === 'NotAllowedError') {
+                        alert('Please grant camera access to use this feature. You may need to reload the page after granting permission.');
+                    } else {
+                        alert('An error occurred while accessing the camera.');
+                    }
                 });
         }
 
@@ -64,9 +68,10 @@
                         })
                         .catch((error) => console.error(error));
                 }, 'image/jpeg', 0.8);
-            }, 150);
+            }, 100);
         });
     </script>
 </body>
 
 </html>
+
