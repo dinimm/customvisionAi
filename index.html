@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Custom Vision Prediction API</title>
+    <meta charset="UTF-8" />
+</head>
+
+<body>
+    <h1>Custom Vision Prediction API</h1>
+    <video id="video" width="640" height="480" autoplay></video>
+    <canvas id="canvas" width="640" height="480"></canvas>
+    <script>
+        const predictionKey = '75deb4a7d3c64b8e9f9cb69984efbc6f';
+        const predictionURL = 'https://northeurope.api.cognitive.microsoft.com/customvision/v3.0/Prediction/c066cfd2-2ebc-4a0b-9250-fb6470db2a19/detect/iterations/Iteration8/image';
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const context = canvas.getContext('2d');
+        const detectionThreshold = 0.6; // Adjust this value according to your needs
+
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            navigator.mediaDevices.getUserMedia({ video: true }).then((stream) => {
+                video.srcObject = stream;
+                video.play();
+            });
+        }
+
+        setInterval(() => {
+            context.drawImage(video, 0, 0, 640, 480);
+            canvas.toBlob(blob => {
+                fetch(predictionURL, {
+                    method: 'POST',
+                    headers: {
+                        'Prediction-Key': predictionKey,
+                        'Content-Type': 'application/octet-stream',
+                    },
+                    body: blob,
+                })
+                    .then((response) => response.json())
+                    .then((data) => {
+                        console.log(data);
+                        if (data.predictions && data.predictions.length > 50) {
+                            let highestPrediction = data.predictions.reduce((max, p) => max.probability > p.probability ? max : p);
+                            if (highestPrediction.probability > detectionThreshold) {
+                                console.log(highestPrediction.tagName)
+                                // alert('Detected: ' + highestPrediction.tagName);
+                            }
+                            if (highestPrediction.tagName === 'recycled') {
+                                alert('bottle is recycled')
+                            }
+
+                        }
+                    })
+                    .catch((error) => console.error(error));
+            }, 'image/jpeg', 0.8);
+        }, 100);
+    </script>
+</body>
+
+</html>
