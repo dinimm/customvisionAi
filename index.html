@@ -4,16 +4,30 @@
 <head>
     <title>Custom Vision Prediction API</title>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        video {
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+
+        canvas {
             display: block;
+            max-width: 100%;
+            max-height: 100%;
+            border: 1px solid black;
+            box-sizing: border-box;
         }
     </style>
 </head>
 
 <body>
     <h1>Custom Vision Prediction API</h1>
-    <video autoplay muted playsinline id="video" width="640" height="480" autoplay muted></video>
+    <video id="video" width="640" height="480" autoplay muted playsinline style="display:none;"></video>
     <canvas id="canvas" width="640" height="480"></canvas>
     <script>
         const predictionKey = '75deb4a7d3c64b8e9f9cb69984efbc6f';
@@ -21,7 +35,6 @@
         const video = document.getElementById('video');
         const canvas = document.getElementById('canvas');
         const context = canvas.getContext('2d');
-        const detectionThreshold = 0.6; // Adjust this value according to your needs
 
         if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             navigator.mediaDevices.getUserMedia({
@@ -31,6 +44,9 @@
             })
                 .then((stream) => {
                     video.srcObject = stream;
+                    video.onloadedmetadata = () => {
+                        video.play();
+                    };
                 })
                 .catch((error) => {
                     console.error('Error accessing camera:', error);
@@ -45,8 +61,13 @@
         }
 
         video.addEventListener('play', () => {
+            const draw = () => {
+                context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                requestAnimationFrame(draw);
+            };
+            draw();
+
             setInterval(() => {
-                context.drawImage(video, 0, 0, 640, 480);
                 canvas.toBlob(blob => {
                     fetch(predictionURL, {
                         method: 'POST',
@@ -59,20 +80,16 @@
                         .then((response) => response.json())
                         .then((data) => {
                             console.log(data);
-                            if (data.predictions && data.predictions.length > 50) {
-                                let highestPrediction = data.predictions.reduce((max, p) => max.probability > p.probability ? max : p);
-                                if (highestPrediction.probability > detectionThreshold) {
-                                    console.log(highestPrediction.tagName)
-                                    // alert('Detected: ' + highestPrediction.tagName);
-                                }
-                                if (highestPrediction.tagName === 'recycled') {
-                                    alert('bottle is recycled')
+                            if (data.predictions && data.predictions.length > 0) {
+                                let recycledPrediction = data.predictions.find(p => p.tagName === 'recycled');
+                                if (recycledPrediction && recycledPrediction.probability > 0.3) {
+                                    alert('bottle is recycled');
                                 }
                             }
                         })
                         .catch((error) => console.error(error));
                 }, 'image/jpeg', 0.8);
-            }, 165);
+            }, 500);
         });
     </script>
 </body>
