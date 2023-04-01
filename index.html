@@ -39,7 +39,9 @@
         if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             navigator.mediaDevices.getUserMedia({
                 video: {
-                    facingMode: 'environment'
+                    facingMode: 'environment',
+                    width: { ideal: 1280 },
+                    height: { ideal: 720 }
                 }
             })
                 .then((stream) => {
@@ -82,7 +84,7 @@
                             console.log(data);
                             if (data.predictions && data.predictions.length > 0) {
                                 let recycledPrediction = data.predictions.find(p => p.tagName === 'recycled');
-                                if (recycledPrediction && recycledPrediction.probability > 0.3) {
+                                if (recycledPrediction && recycledPrediction.probability > 0.6) {
                                     alert('bottle is recycled');
                                 }
                             }
