@@ -26,7 +26,7 @@
 </head>
 
 <body>
-    <h1>Custom Vision Prediction API</h1>
+    <h3>Custom Vision Prediction API</h3>
     <video id="video" width="640" height="480" autoplay muted playsinline style="display:none;"></video>
     <canvas id="canvas" width="640" height="480"></canvas>
     <script>
@@ -38,12 +38,11 @@
 
         if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             navigator.mediaDevices.getUserMedia({
-                  video: {
-            facingMode: 'environment',
-            width: { ideal: 640 },
-            height: { ideal: 480 },
-                      zoom: 1
-        }
+                video: {
+                    facingMode: 'environment',
+                    width: { ideal: 640 },
+                    height: { ideal: 480 }
+                }
             })
                 .then((stream) => {
                     video.srcObject = stream;
@@ -85,7 +84,7 @@
                             console.log(data);
                             if (data.predictions && data.predictions.length > 0) {
                                 let recycledPrediction = data.predictions.find(p => p.tagName === 'recycled');
-                                if (recycledPrediction && recycledPrediction.probability > 0.6) {
+                                if (recycledPrediction && recycledPrediction.probability > 0.8) {
                                     alert('bottle is recycled');
                                 }
                             }
